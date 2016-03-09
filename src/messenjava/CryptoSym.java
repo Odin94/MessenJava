@@ -17,20 +17,36 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class CryptoSym {
 
-    private SecretKey sharedSecret;
-
     public CryptoSym(String secret) {
         //create AESKey from secret
     }
 
-    public String encrypt(String initVector, String text) {
-        System.out.println("CryptoSym.encrypt not yet implemented!");
-        return text;
+    public static String encrypt(String text, SecretKey sharedSecret) {
+        byte[] byteText = null;
+
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
+            byteText = cipher.doFinal(text.getBytes());
+        } catch (Exception e) {
+        }
+
+        String encText = Base64.getEncoder().encodeToString(byteText);
+
+        return encText;
     }
 
-    public String decrypt(String initVector, String text) {
-        System.out.println("CryptoSym.decrypt not yet implemented!");
-        return text;
-    }
+    public static String decrypt(String encText, SecretKey sharedSecret) {
+        byte[] crypted = Base64.getDecoder().decode(encText);
+        byte[] cipherData = null;
 
+        try {
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.DECRYPT_MODE, sharedSecret);
+            cipherData = cipher.doFinal(crypted);
+        } catch (Exception e) {
+        }
+
+        return new String(cipherData);
+    }
 }

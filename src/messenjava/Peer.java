@@ -29,7 +29,7 @@ public class Peer {
         //this.privKey = getPrivKeyFromString(privKey);
     }
 
-    public void send(String message) {
+    public void prepareSecretAndSend(String message) {
         //encrypt message; throw exception if CryptoSym not established?
         
         connection.send(message);
