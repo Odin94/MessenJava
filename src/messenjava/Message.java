@@ -11,6 +11,15 @@ public class Message {
     protected boolean isCommand; 
     protected String timestamp;
 
+    public static Message parseStringToMessage(String msg){
+        if (msg.startsWith("Command")){
+            return CommandMessage.parseStringToCommandMessage(msg);
+        }
+        else {
+            return DocumentMessage.parseStringToDocumentMessage(msg);
+        }
+    }
+    
     public String getSender() {
         return sender;
     }
@@ -26,14 +35,5 @@ public class Message {
     public boolean isCommand(){
         return isCommand;
     }
-    
-    public static Message parseStringToMessage(String msg){
-        if (msg.startsWith("Command")){
-            return CommandMessage.parseStringToCommandMessage(msg);
-        }
-        else {
-            return DocumentMessage.parseStringToDocumentMessage(msg);
-        }
-    }
-       
+           
 }

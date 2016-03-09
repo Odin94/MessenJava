@@ -29,9 +29,28 @@ public class DocumentMessage extends Message{
     
     
     public static DocumentMessage parseStringToDocumentMessage(String msg){
-        return new DocumentMessage("Some Sender", "Some Receiver","Some Payload","Some Timestamp","Maybe some OTS");
+        String[] msgParts = msg.split("-");
+        if (checkMsgFormat(msgParts)){
+            return new DocumentMessage(msgParts[1].split(":")[1], msgParts[2].split(":")[1], 
+                   msgParts[3].split(":")[1],msgParts[4].split(":")[1],msgParts[5].split(":")[1]);
+        }
+        else{
+            System.err.println("Invalid Message Format in parseStringToDocumentMessage");
+            return null;
+        }
     }
 
+    public static boolean checkMsgFormat(String[] msgParts){
+        try{
+            return msgParts[0].startsWith("Document") && msgParts[1].startsWith("Sender") 
+                   && msgParts[2].startsWith("Receiver") && msgParts[3].startsWith("Timestamp") 
+                   && msgParts[4].startsWith("OTS") && msgParts[5].startsWith("Payload");
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+    
     @Override
     public String toString(){
         return String.format("Document-Sender:%s-Receiver:%s-Timestamp:%s-OTS:%s-Payload:%s", 

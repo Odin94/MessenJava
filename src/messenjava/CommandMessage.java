@@ -40,21 +40,51 @@ public class CommandMessage extends Message {
     }
           
     public static CommandMessage parseStringToCommandMessage(String msg){
-        try{
-            byte[] IP = new byte[4];
-            IP[0] = (byte) 192;
-            IP[1] = (byte) 168;
-            IP[2] = (byte) 1;
-            IP[3] = (byte) 33;
-            
-            return new CommandMessage ("Sender", "Receiver", new Date().toString(), true,"Peter",42000,
-                    InetAddress.getByAddress(IP),13);
-        }
-        catch (Exception e){
-            System.err.println("This should never happen. "
+        String[] msgParts = msg.split("-");
+        if (checkMsgFormat(msgParts)){
+            boolean flag;
+            if (msgParts[1].equals("Generate")){
+                flag = true;
+            }
+            else{
+                flag = false;
+            }
+            try{
+                byte[] IP = new byte[4];
+                IP[0] = (byte) 192;
+                IP[1] = (byte) 168;
+                IP[2] = (byte) 1;
+                IP[3] = (byte) 33;
+                
+                return new CommandMessage (msgParts[2].split(":")[1], msgParts[3].split(":")[1], 
+                   msgParts[4].split(":")[1], flag, msgParts[6].split(":")[1],
+                   Integer.parseInt(msgParts[7].split(":")[1]), InetAddress.getByAddress(IP),
+                   Integer.parseInt(msgParts[5].split(":")[1]));
+            }
+            catch (Exception e){
+                System.err.println("This should never happen. "
                     + "UnkownHostError in parseStringToCommandMessage. "
                     + "IpAddress of invalid length.");
-            return null; 
+                return null; 
+            }
+        }
+        else{
+            System.err.println("Invalid Message Format in parseStringToCommandMessage");
+            return null;
+        }
+        
+    }
+    
+    public static boolean checkMsgFormat(String[] msgParts){
+        try{
+            return msgParts[0].startsWith("Command") && (msgParts[1].equals("Generate") || msgParts[1].equals("Delete"))
+                   && msgParts[2].startsWith("Sender") && msgParts[3].startsWith("Receiver") 
+                   && msgParts[4].startsWith("Timestamp") && msgParts[5].startsWith("ID") 
+                   && msgParts[6].startsWith("Name") && msgParts[7].startsWith("Port") 
+                   && msgParts[8].startsWith("IP");
+        }
+        catch (Exception e){
+            return false;
         }
     }
     
@@ -69,6 +99,26 @@ public class CommandMessage extends Message {
         }
         return String.format("Command-%s-Sender:%s-Receiver:%s-Timestamp:%s-ID:%s-Name:%s-Port:%s-IP:%s", 
                 flag,sender,receiver,timestamp,ID,name,port,IPAddress.toString());
+    }
+
+    public boolean isGenerate() {
+        return isGenerate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public InetAddress getIPAddress() {
+        return IPAddress;
+    }
+
+    public int getID() {
+        return ID;
     }
     
 }
