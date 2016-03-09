@@ -9,6 +9,7 @@ public class Message {
     protected String sender;
     protected String receiver;
     protected boolean isCommand; 
+    protected String timestamp;
 
     public String getSender() {
         return sender;
@@ -16,6 +17,10 @@ public class Message {
 
     public String getReceiver() {
         return receiver;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
     }
     
     public boolean isCommand(){
@@ -30,5 +35,5 @@ public class Message {
             return DocumentMessage.parseStringToDocumentMessage(msg);
         }
     }
-    
+       
 }

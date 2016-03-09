@@ -15,13 +15,13 @@ import java.util.ArrayList;
  */
 public class Peer {
 
+    private int ID;
     private String name;
     private Connection connection;
     private RSAPublicKey pubKey;
-    private RSAPrivateKey privKey;
     private CryptoSym cryptoSym;
-    private ArrayList<String> messages;
-
+    private ArrayList<Message> oldMessages;
+    
     public Peer(String name, String ipAddress, int port, String pubKey, String privKey) {
         this.name = name;
         this.connection = new Connection(ipAddress, port);
