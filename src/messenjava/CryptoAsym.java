@@ -11,9 +11,9 @@ import java.security.PublicKey;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
+import java.util.Arrays;
 import javax.crypto.Cipher;
-import sun.misc.BASE64Decoder;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  *
@@ -33,13 +33,13 @@ public class CryptoAsym {
         } catch (Exception e) {
         }
 
-        String encText = Base64.getEncoder().encodeToString(byteText);
+        String encText = Arrays.toString(Base64.encodeBase64(byteText));
 
         return encText;
     }
 
     public static String decrypt(String encText, PrivateKey privKey) {
-        byte[] encBytes = Base64.getDecoder().decode(encText);
+        byte[] encBytes = Base64.decodeBase64(encText.getBytes());
         byte[] cipherData = null;
 
         try {
@@ -73,7 +73,7 @@ public class CryptoAsym {
             System.out.println("fml my life");
             throw new IllegalArgumentException("things are fucked m8");
         }*/
-        byte[] publicBytes = new byte[0];
+        byte[] publicBytes = Base64.encodeBase64(pubKeyString.getBytes());
          PublicKey pubKey = null;
 
          X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
@@ -87,7 +87,7 @@ public class CryptoAsym {
     }
 
     public static PrivateKey stringToPrivKey(String privKeyString) {
-        byte[] privateKeyBytes = Base64.getDecoder().decode(privKeyString);
+        byte[] privateKeyBytes = Base64.decodeBase64(privKeyString.getBytes());
         PrivateKey privateKey = null;
 
         try {
@@ -119,12 +119,12 @@ public class CryptoAsym {
         privKeyString = "-----BEGIN RSA PRIVATE KEY-----MIIBOgIBAAJBAJ+RrtT2AgExP8ivuY5ApTRLDrxTkqFUdYUCslOLZCGWhyTDbapFb0TxhW40WOiJIcohKjPTUq/Qkx3DMOFGhFcCAwEAAQJAG/JR4m5rj3Xmq+lK4EUmKfBzVjx009iM9IyyWrtxAAisHnv9AjUsmT/JB8nfb7rgPB7TsXIkM8SWIvVVK+fKwQIhANW5ISKFxAJd5zNEB+qCoLXGtZrdjPv4d+1vl6rIWkqxAiEAvyI1VGqfshQhJ06Ng3YjTdY1olVi5SYLH0oVZVQBcYcCIB3In9p8w7UEuwyE5YmDzLuoRnSffV874BKho4Q0SYjxAiEAg0wgjmjgYxho3fOcSt5wyhuIpIc7dGZ55Xii0gSvKSkCIELy6ngqKVLrFEeyNUTjx/UpNxYW73iZP5FBmkAW/dVM-----END RSA PRIVATE KEY-----";
         
         PublicKey pubKey = stringToPubKey(pubKeyString);
-        PrivateKey privKey = stringToPrivKey(privKeyString);
+        PrivateKey privateKey = stringToPrivKey(privKeyString);
 
         String encText = encrypt(text, pubKey);
         System.out.println("encrypted: " + encText);
 
-        String decText = decrypt(encText, privKey);
+        String decText = decrypt(encText, privateKey);
 
         if (decText.equals(text)) {
             System.out.println("CryptoAsym seems to work as intended");
