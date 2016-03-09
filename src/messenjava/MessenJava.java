@@ -24,7 +24,10 @@ import javafx.stage.Stage;
 public class MessenJava extends Application {
     int windowWidth=600;
     int windowheight=400;
-    Label ChatMessages=new Label("Dummi Text");
+    Label ChatMessages=new Label("start Text");
+    HBox onePerson=new HBox();
+    Label name=new Label();
+    Label onOff=new Label();
     
     @Override
     public void start(Stage primaryStage) {
@@ -32,11 +35,12 @@ public class MessenJava extends Application {
         
         VBox PeopleSection=new VBox();
         PeopleSection.setStyle("-fx-background-color: #336699;");
+        onePerson.getChildren().addAll(name,onOff);
         
         Label Header_PeopleSection=new Label("People");
         Header_PeopleSection.setFont(new Font("Arial", 20));
         
-        PeopleSection.getChildren().add(Header_PeopleSection);
+        PeopleSection.getChildren().addAll(Header_PeopleSection,onePerson);
         
         Label messageLabel = new Label("Message:");
         TextField messageField = new TextField();
@@ -68,6 +72,8 @@ public class MessenJava extends Application {
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        updateStatus(null,null);
     }
     
     private void send(){
@@ -91,8 +97,12 @@ public class MessenJava extends Application {
         ChatMessages.setText(message);
     }
     
-    private void updateStatus(){
-        
+    private void updateStatus(String name, String online){
+        name="heinz ";
+        online=("on");
+        this.name.setText(name);
+        this.onOff.setText(online);
+
     }
     
     //Todo: attach to onClose event
@@ -106,7 +116,6 @@ public class MessenJava extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
         launch(args);
     }
 
