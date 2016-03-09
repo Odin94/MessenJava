@@ -8,6 +8,7 @@ package messenjava;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,6 +36,8 @@ public class MessenJava extends Application {
         
         VBox PeopleSection=new VBox();
         PeopleSection.setStyle("-fx-background-color: #336699;");
+        PeopleSection.setPadding(new Insets(10, 10, 10, 10));
+        
         onePerson.getChildren().addAll(name,onOff);
         
         Label Header_PeopleSection=new Label("People");
@@ -47,6 +50,7 @@ public class MessenJava extends Application {
         
         VBox oneChat = new VBox();
         oneChat.setStyle("-fx-background-color: #119911;");
+        oneChat.setPadding(new Insets(10, 10, 10, 10));
         
         HBox ChatInputSection=new HBox();
         
