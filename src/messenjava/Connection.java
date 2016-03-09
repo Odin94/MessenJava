@@ -1,14 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package messenjava;
 
 /**
  *
- * @author Odin
+ * @author Odin: Dummy
+ * @author Maxi: connect()
  */
 public class Connection {
     
@@ -21,7 +16,7 @@ public class Connection {
     }
     
     public boolean connect() {
-        System.out.println("Connection.connect not yet implemented");
+        
         return true; // return true if connection established successfully
     }
     
