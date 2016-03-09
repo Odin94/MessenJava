@@ -55,7 +55,9 @@ public class MessenJava extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("ICH BIN DIE MAIN 111");
         launch(args);
+        System.out.println("ICH BIN DIE MAIN 222222<<");
     }
 
 }
