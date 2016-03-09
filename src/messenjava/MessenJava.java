@@ -76,6 +76,9 @@ public class MessenJava extends Application {
         updateStatus(null,null);
     }
     
+    /**
+     * 
+     */
     private void send(){
         //Log
         System.out.print("Log; MessenJava; send; Message: ");
