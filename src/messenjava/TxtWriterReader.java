@@ -29,20 +29,28 @@ public class TxtWriterReader {
         } catch (Exception f) {
             f.printStackTrace();
         }
-        
+
         return content;
     }
-    
+
     public static void testMe() {
-        String testText = "this is my text";
+        String fname = "testfile.txt";
         
-        write("testfile.txt", testText);
-        String readText = read("testfile.txt");
-        
-        if(readText.equals(testText)) {
-            System.out.println("Txtwriterreader seems to work!");
+        File f = new File(fname);
+        try {
+            f.getParentFile().mkdirs(); 
+            f.createNewFile();
+        } catch (Exception e) {
         }
-        else {
+
+        String testText = "this is my text";
+
+        write(fname, testText);
+        String readText = read(fname);
+
+        if (readText.equals(testText)) {
+            System.out.println("Txtwriterreader seems to work!");
+        } else {
             System.out.println(testText + " not equal to: " + readText);
         }
     }

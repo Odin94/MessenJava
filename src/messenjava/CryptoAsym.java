@@ -103,7 +103,7 @@ public class CryptoAsym {
     }
 
     public static void testMe() {
-        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        //Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
         
         //TESTS
         String text = "Ick bin ein Berliner!";
