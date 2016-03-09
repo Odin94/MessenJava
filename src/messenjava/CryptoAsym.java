@@ -8,6 +8,7 @@ package messenjava;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -31,6 +32,7 @@ public class CryptoAsym {
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             byteText = cipher.doFinal(text.getBytes());
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         String encText = Arrays.toString(Base64.encodeBase64(byteText));
@@ -101,6 +103,8 @@ public class CryptoAsym {
     }
 
     public static void testMe() {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        
         //TESTS
         String text = "Ick bin ein Berliner!";
 
