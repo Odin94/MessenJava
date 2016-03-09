@@ -13,7 +13,12 @@ public class Config {
     private static int myID;
     private static String myName;
     private static int myPort;
-    private static InetAddress myIP;
+    /**
+     * To get my IP, I need to use something like STUN
+     * There are open STUN servers, and probably some implementations, but I did not find anything directly useful.
+     * Still, we want P2P, so keep on searching...
+     */
+    private static InetAddress myIP; 
     private static RSAPrivateKey privKey;
 
     public void initializeConfig(){
