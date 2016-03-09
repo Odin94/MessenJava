@@ -90,7 +90,7 @@ public class MessenJava extends Application {
         display(message,true);
         
         //Send message
-        
+        //peer.send
     }
 
     public void display(String message, boolean ownMessage){
