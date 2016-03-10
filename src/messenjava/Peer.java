@@ -24,7 +24,7 @@ public class Peer {
     
     public Peer(String name, String ipAddress, int port, String pubKey, String privKey) {
         this.name = name;
-        this.connection = new Connection(ipAddress, port);
+        this.connection = new Connection(Util.StringToInetAddress(ipAddress), port);
         //this.pubKey = getPubKeyFromString(pubKey);
         //this.privKey = getPrivKeyFromString(privKey);
     }
@@ -32,7 +32,7 @@ public class Peer {
     public void prepareSecretAndSend(String message) {
         //encrypt message; throw exception if CryptoSym not established?
         
-        connection.send(message);
+        //connection.send(message);
     }
     
     public void receive() {

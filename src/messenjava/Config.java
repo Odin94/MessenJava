@@ -23,13 +23,13 @@ public class Config {
 
     public void initializeConfig(){
         //TODO!
-        //Read txt, using the still missing txt-reader.
-        //Then put it in the static values
-        //Then party hard
-        //REAL HARD!!!11
+        //Read config, use port mapping
         myID = 1;
-        myName = "Peter";
+        myName = "Maxi";
+        myIP = Util.StringToInetAddress("192.168.1.33");
         myPort = 1337;
+        
+        
     }
     
     public static int getMyID() {
