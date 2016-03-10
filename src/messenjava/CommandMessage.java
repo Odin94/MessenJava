@@ -49,24 +49,12 @@ public class CommandMessage extends Message {
             else{
                 flag = false;
             }
-            try{
-                byte[] IP = new byte[4];
-                IP[0] = (byte) 192;
-                IP[1] = (byte) 168;
-                IP[2] = (byte) 1;
-                IP[3] = (byte) 33;
                 
-                return new CommandMessage (msgParts[2].split(":")[1], msgParts[3].split(":")[1], 
-                   msgParts[4].split(":")[1], flag, msgParts[6].split(":")[1],
-                   Integer.parseInt(msgParts[7].split(":")[1]), InetAddress.getByAddress(IP),
-                   Integer.parseInt(msgParts[5].split(":")[1]));
-            }
-            catch (Exception e){
-                System.err.println("This should never happen. "
-                    + "UnkownHostError in parseStringToCommandMessage. "
-                    + "IpAddress of invalid length.");
-                return null; 
-            }
+            return new CommandMessage (msgParts[2].split(":")[1], msgParts[3].split(":")[1], 
+               msgParts[4].split(":")[1], flag, msgParts[6].split(":")[1],
+               Integer.parseInt(msgParts[7].split(":")[1]), Util.StringToInetAddress(msgParts[8].split(":")[1]),
+               Integer.parseInt(msgParts[5].split(":")[1]));
+           
         }
         else{
             System.err.println("Invalid Message Format in parseStringToCommandMessage");
