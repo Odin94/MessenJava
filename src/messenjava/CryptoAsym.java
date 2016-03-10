@@ -5,53 +5,92 @@
  */
 package messenjava;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Security;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Arrays;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import org.apache.commons.codec.binary.Base64;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
  * @author Odin
  */
+class EncryptionFailedException extends Exception {
+
+    public EncryptionFailedException() {
+    }
+
+    public EncryptionFailedException(String message) {
+        super(message);
+    }
+}
+
+class DecryptionFailedException extends Exception {
+
+    public DecryptionFailedException() {
+    }
+
+    public DecryptionFailedException(String message) {
+        super(message);
+    }
+}
+
 public class CryptoAsym {
 
     static PrivateKey privKey;
 
-    public static String encrypt(String text, PublicKey pubKey) {
-        byte[] byteText = null;
+    public static byte[] encrypt(String data, PublicKey pubKey) throws EncryptionFailedException {
+        byte[] dataToEncrypt = data.getBytes();
+        byte[] encryptedData = null;
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-            byteText = cipher.doFinal(text.getBytes());
-        } catch (Exception e) {
+            encryptedData = cipher.doFinal(dataToEncrypt);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
 
-        String encText = Arrays.toString(Base64.encodeBase64(byteText));
+        if (encryptedData == null) {
+            throw new EncryptionFailedException("Could not encrypt String: " + data);
+        }
 
-        return encText;
+        return encryptedData;
     }
 
-    public static String decrypt(String encText, PrivateKey privKey) {
-        byte[] encBytes = Base64.decodeBase64(encText.getBytes());
-        byte[] cipherData = null;
+    public static String decrypt(byte[] data, PrivateKey privKey) throws DecryptionFailedException {
+        byte[] decryptedData = null;
 
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privKey);
-            cipherData = cipher.doFinal(encBytes);
-        } catch (Exception e) {
+            decryptedData = cipher.doFinal(data);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException e) {
+            e.printStackTrace();
         }
 
-        return new String(cipherData);
+        if (decryptedData == null) {
+            throw new DecryptionFailedException("Could not decrypt byte array: " + data);
+        }
+
+        return new String(decryptedData);
     }
 
     public static String sign(String text, PrivateKey privKey) {
@@ -64,76 +103,137 @@ public class CryptoAsym {
         return text;
     }
 
-    public static PublicKey stringToPubKey(String pubKeyString) {
-       /* try {
-            X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(pubKeyString.getBytes());
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PublicKey publicKey = keyFactory.generatePublic(pubKeySpec);
+    public static PublicKey readPublicKeyFromFile(String filename) throws IOException {
+        FileInputStream fis = new FileInputStream(new File(filename));
+        ObjectInputStream ois = new ObjectInputStream(fis);
 
-            return publicKey;
-        } catch (Exception e) {
-            System.out.println("fml my life");
-            throw new IllegalArgumentException("things are fucked m8");
-        }*/
-        byte[] publicBytes = Base64.encodeBase64(pubKeyString.getBytes());
-         PublicKey pubKey = null;
+        BigInteger modulus = null;
+        BigInteger exponent = null;
+        try {
+            modulus = (BigInteger) ois.readObject();
+            exponent = (BigInteger) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            //this should never happen '_>'
+            e.printStackTrace();
+        }
 
-         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicBytes);
-         try {
-         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-         pubKey = keyFactory.generatePublic(keySpec);
-         } catch (Exception e) {
-         }
+        RSAPublicKeySpec rsaPubKeySpec = new RSAPublicKeySpec(modulus, exponent);
 
-         return pubKey;
+        PublicKey pubKey = null;
+        try {
+            KeyFactory kFact = KeyFactory.getInstance("RSA");
+            pubKey = kFact.generatePublic(rsaPubKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        ois.close();
+        fis.close();
+
+        return pubKey;
     }
 
-    public static PrivateKey stringToPrivKey(String privKeyString) {
-        byte[] privateKeyBytes = Base64.decodeBase64(privKeyString.getBytes());
-        PrivateKey privateKey = null;
+    public static PrivateKey readPrivateKeyFromFile(String filename) throws IOException {
+        FileInputStream fis = new FileInputStream(new File(filename));
+        ObjectInputStream ois = new ObjectInputStream(fis);
 
+        BigInteger modulus = null;
+        BigInteger exponent = null;
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            KeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-            privateKey = keyFactory.generatePrivate(privateKeySpec);
-        } catch (Exception e) {
+            modulus = (BigInteger) ois.readObject();
+            exponent = (BigInteger) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            //this should never happen '_>'
+            e.printStackTrace();
         }
+
+        PrivateKey privateKey = null;
+        try {
+            RSAPrivateKeySpec rsaPrivateKeySpec = new RSAPrivateKeySpec(modulus, exponent);
+            KeyFactory kFact = KeyFactory.getInstance("RSA");
+            privateKey = kFact.generatePrivate(rsaPrivateKeySpec);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        ois.close();
+        fis.close();
 
         return privateKey;
     }
 
-    public static void testMe() {
-        //Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        
-        //TESTS
-        String text = "Ick bin ein Berliner!";
+    public static void saveKeys(String filename, BigInteger mod, BigInteger exp) throws IOException {
+        FileOutputStream fos = new FileOutputStream(filename);
+        ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(fos));
 
-        String pubKeyString = "-----BEGIN PUBLIC KEY-----\n"
-                + "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3Sqn2pfQTymObJhdZYP7v/vmK\n"
-                + "0J1aQc+WQSMw+MFVNHn5IzjIDt8s+GR5fo8ta//1Z9mZkPGs6CoX6BdAL/prje6q\n"
-                + "kxYuvkuhUu4wsZN+m7QEdtcFAcTeWjOCY9ciW89m6RKdDknq7C0iVnYRkBZTi1QC\n"
-                + "YLeQiZULE9LHezxEcwIDAQAB\n"
-                + "-----END PUBLIC KEY-----";
-        
-        //wrong key here but who careas hhaha
-        pubKeyString = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgEfgW1xv55NBXLQJu+Kzh6taqHf4SrJ+xN3Z7Wu5T1mPWYIg6Ne0bFQUyqAe4bYk3lPvchYbDZky8snuyopZq7g2GcxbrxLMiJN8X1iD4WYAaRJ4EBgAuSUfp2i7r1P7c6yPeLdEQDtgTihY4jcIpRp+GxJXCp88jR4YOLIeslFnAgMBAAE=-----END PUBLIC KEY-----";
+        oos.writeObject(mod);
+        oos.writeObject(exp);
 
-        String privKeyString = "-----BEGIN RSA PRIVATE KEY-----MIICXAIBAAKBgQC3Sqn2pfQTymObJhdZYP7v/vmK0J1aQc+WQSMw+MFVNHn5IzjIDt8s+GR5fo8ta//1Z9mZkPGs6CoX6BdAL/prje6qkxYuvkuhUu4wsZN+m7QEdtcFAcTeWjOCY9ciW89m6RKdDknq7C0iVnYRkBZTi1QCYLeQiZULE9LHezxEcwIDAQABAoGBAKZxpeA2GWwzWLpWH9PpUfisiP02rf19T735TrS04BO4wJ6uDm0VnDKhKdRuSiSMM3YtpRtf1ScX+MmW2C5Qo0yj6FlEuK2SAfd6F7TSwnKbHoJNFGCSnGrNewclNoBdZAgFY83rIYHzUg0fn8EaLNGrBfW44xSwsa9i2A1CsmWRAkEA/VtsJF4smkwTeQwyZDGflUHFH23oFaZu+Gf7JWUsQdSJmQ1JgNoTBDbdgSsjGUNR6GmMHd0z+OV/xFtYtswfuwJBALk0IpnYvxbDqCRhjp9kCrsp76BWMRr8EoCxqzZ0T9MHKBo0WHt9JdfHiNsAXWF3nILdy35LBq9hVAP/afAP1qkCQCZTgCZ4QJMO0xtKpwzVHOj9TA6XF7a+uKbHRAzCI1HKDw6iHe5qDtpiWlvB5MtbjbZ00QdrgQMz5IIVt3PfqSUCQCp7fAhgQIz/On2F50pGj3OZTf8wZjkzYyckGgr2qSzV8mv4X+eLsHeLrKfXsJPf9QXLzJberNzj7XqxRuKrL2kCQA1x+1wMwBUXF36DFCnjKbD+9ZDIiJfzlH3HE88F6tPFiDJy7CiZJMKLL8V+PYaExUjxtrPiCZyZ6dT4LAnBRDM=-----END RSA PRIVATE KEY-----";
+        oos.close();
+        fos.close();
+    }
 
-        privKeyString = "-----BEGIN RSA PRIVATE KEY-----MIIBOgIBAAJBAJ+RrtT2AgExP8ivuY5ApTRLDrxTkqFUdYUCslOLZCGWhyTDbapFb0TxhW40WOiJIcohKjPTUq/Qkx3DMOFGhFcCAwEAAQJAG/JR4m5rj3Xmq+lK4EUmKfBzVjx009iM9IyyWrtxAAisHnv9AjUsmT/JB8nfb7rgPB7TsXIkM8SWIvVVK+fKwQIhANW5ISKFxAJd5zNEB+qCoLXGtZrdjPv4d+1vl6rIWkqxAiEAvyI1VGqfshQhJ06Ng3YjTdY1olVi5SYLH0oVZVQBcYcCIB3In9p8w7UEuwyE5YmDzLuoRnSffV874BKho4Q0SYjxAiEAg0wgjmjgYxho3fOcSt5wyhuIpIc7dGZ55Xii0gSvKSkCIELy6ngqKVLrFEeyNUTjx/UpNxYW73iZP5FBmkAW/dVM-----END RSA PRIVATE KEY-----";
-        
-        PublicKey pubKey = stringToPubKey(pubKeyString);
-        PrivateKey privateKey = stringToPrivKey(privKeyString);
+    public static void generateKeysAndSaveToFiles(String pubKeyFileName, String privKeyFileName) throws IOException {
+        generateKeysAndSaveToFiles(2048, pubKeyFileName, privKeyFileName);
+    }
 
-        String encText = encrypt(text, pubKey);
-        System.out.println("encrypted: " + encText);
+    public static void generateKeysAndSaveToFiles(int bitLenght, String pubKeyFileName, String privKeyFileName) throws IOException {
+        KeyPairGenerator keyGen = null;
+        try {
+            keyGen = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
-        String decText = decrypt(encText, privateKey);
+        keyGen.initialize(bitLenght);
+        KeyPair keyPair = keyGen.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
 
-        if (decText.equals(text)) {
-            System.out.println("CryptoAsym seems to work as intended");
+        RSAPublicKeySpec rsaPubKeySpec = null;
+        RSAPrivateKeySpec rsaPrivKeySpec = null;
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            rsaPubKeySpec = keyFactory.getKeySpec(publicKey, RSAPublicKeySpec.class);
+            rsaPrivKeySpec = keyFactory.getKeySpec(privateKey, RSAPrivateKeySpec.class);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        saveKeys(pubKeyFileName, rsaPubKeySpec.getModulus(), rsaPubKeySpec.getPublicExponent());
+        saveKeys(privKeyFileName, rsaPrivKeySpec.getModulus(), rsaPrivKeySpec.getPrivateExponent());
+    }
+
+    public static void testMe() throws Exception {
+        String PUBLIC_KEY_FILE = "pub.key";
+        String PRIVATE_KEY_FILE = "priv.key";
+
+        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+
+        keyGen.initialize(2048);
+        KeyPair keyPair = keyGen.generateKeyPair();
+        PublicKey pubKey = keyPair.getPublic();
+        PrivateKey privKey = keyPair.getPrivate();
+
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        RSAPublicKeySpec rsaPubKeySpec = keyFactory.getKeySpec(pubKey, RSAPublicKeySpec.class
+        );
+        RSAPrivateKeySpec rsaPrivKeySpec = keyFactory.getKeySpec(privKey, RSAPrivateKeySpec.class);
+
+        saveKeys(PUBLIC_KEY_FILE, rsaPubKeySpec.getModulus(), rsaPubKeySpec.getPublicExponent());
+        saveKeys(PRIVATE_KEY_FILE, rsaPrivKeySpec.getModulus(), rsaPrivKeySpec.getPrivateExponent());
+
+        PublicKey pubKeyRead = readPublicKeyFromFile(PUBLIC_KEY_FILE);
+
+        byte[] encryptedData = encrypt("Data to enc", pubKeyRead);
+
+        PrivateKey privKeyRead = readPrivateKeyFromFile(PRIVATE_KEY_FILE);
+        String decryptedData = decrypt(encryptedData, privKeyRead);
+
+        if (decryptedData.equals("Data to enc")) {
+            System.out.println("CryptoAsym seems to work fine!");
         } else {
-            System.out.println("CryptoAsym seems to be broken: " + text + " isn't equal to: " + decText);
+            System.out.println("CryptoAsym messed up somewhere along the way: " + decryptedData + " != 'Data to enc'");
         }
     }
 
