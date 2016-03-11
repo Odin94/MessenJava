@@ -184,15 +184,15 @@ public class MessenJava extends Application {
         if (str.equals("Jakob")){
             Config.initializeConfig("Jakob","192.168.179.21",50004);
             otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub"));
-            otherPeers.add(new Peer("Andi","192.168.178.27",50001,"priv","pub"));
+            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub"));
         }
         else if (str.equals("Maxi")){
             Config.initializeConfig("Maxi","192.168.179.20",50002);
             otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub"));
-            otherPeers.add(new Peer("Andi","192.168.178.27",50001,"priv","pub"));
+            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub"));
         }
         else if (str.equals("Andi")){
-            Config.initializeConfig("Andi","192.168.178.27",50001);
+            Config.initializeConfig("Andi","192.168.179.22",50001);
             otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub"));
             otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub"));
         }
