@@ -41,7 +41,9 @@ public class MessenJava extends Application {
     int windowheight = 400;
     
     // a field containing the latest message
-    Label ChatMessages = new Label("start Text");
+        //Label ChatMessages = new Label("start Text");
+        ListView<String> chat;
+        public static ObservableList<String> messages;
     //a field containing the name of the person the user is chating with at the moment, can be updated
     Label chatingWith=new Label();
     
@@ -120,7 +122,10 @@ public class MessenJava extends Application {
         ChatInputSection.getChildren().addAll(messageLabel, messageField, sendButton);
         ChatInputSection.setSpacing(10);
 
-        oneChat.getChildren().addAll(chatingWith,ChatMessages, ChatInputSection);
+        chat=new ListView<String>();
+        chat.setItems(messages);
+        
+        oneChat.getChildren().addAll(chatingWith,chat, ChatInputSection);
 
         BackgroundSeperation.getChildren().addAll(PeopleSection, oneChat);
 
@@ -157,7 +162,8 @@ public class MessenJava extends Application {
     }
 
     public void display(String message, boolean ownMessage) {
-        ChatMessages.setText(message);
+        System.out.println("display: "+message);
+        messages.add(message);
     }
 
     private void updateStatus() {
@@ -214,6 +220,7 @@ public class MessenJava extends Application {
     
     public static void doTestStuff() throws Exception{
         otherPeers = FXCollections.observableList(new ArrayList());
+        messages=FXCollections.observableList(new ArrayList());
         
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter your name");
