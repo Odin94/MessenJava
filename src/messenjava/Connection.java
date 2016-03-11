@@ -70,8 +70,9 @@ public class Connection {
         }
         else {
             System.out.println("Need to connect first");
-            this.connect();
-            this.send(message);
+            if (this.connect()){
+                this.send(message);
+            }
         }
     }
     

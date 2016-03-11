@@ -36,7 +36,7 @@ public class Config {
         myID = 1;
         myName = "Maxi";
         myIP = Util.StringToInetAddress("192.168.179.20");
-        myPort = 1337;
+        myPort = 50002;
         privKey = null;
         
     }

@@ -14,7 +14,8 @@ public class ConnectionListenerThread extends Thread{
     ServerSocket ssocket;
     
     public ConnectionListenerThread() throws Exception{
-        ssocket = new ServerSocket(Config.getMyPort());
+        //ssocket = new ServerSocket(Config.getMyPort());
+        ssocket = new ServerSocket(50004);
     }
         
     @Override

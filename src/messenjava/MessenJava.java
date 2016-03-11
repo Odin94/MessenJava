@@ -155,7 +155,7 @@ public class MessenJava extends Application {
 //        otherPeers.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
 //        otherPeers.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
         //Actually something with dropbox
-        otherPeers.add(new Peer("Jakob","192.168.179.21",1337,"pubKey","privKey"));
+        otherPeers.add(new Peer("Jakob","192.168.179.20",50004,"pubKey","privKey"));
     }
 
     //Todo: attach to onClose event
@@ -177,14 +177,14 @@ public class MessenJava extends Application {
         System.out.println("0");
         Config.initializeConfig();
         System.out.println("1");
-        ConnectionListenerThread lt = new ConnectionListenerThread();
+        ConnectionListenerThread clt = new ConnectionListenerThread();
         System.out.println("2");
-        lt.start();
+        clt.start();
         System.out.println("3");
         
-//        System.out.println("Kurz vor senden");
-//        
-//        otherPeers.get(0).getConnection().send("Es geht!!!11");
+        System.out.println("Kurz vor senden");
+        
+        otherPeers.get(0).getConnection().send("Es geht!!!11");
         
         
 //        Thread t = new Thread (new Runnable() {
