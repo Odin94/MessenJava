@@ -30,6 +30,10 @@ public class Peer {
     }
 
     public void prepareSecretAndSend(String message) {
+        /** generate message header, message object
+        * call Message.toString()
+        * encrypt the returned String -MW */
+        
         //encrypt message; throw exception if CryptoSym not established?
         
         //connection.send(message);
