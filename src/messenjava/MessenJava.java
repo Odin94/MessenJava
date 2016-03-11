@@ -175,20 +175,11 @@ public class MessenJava extends Application {
         
         launch(args);
         
-        otherPeers.get(0).getConnection().connect();
-        new Thread(new Runnable(){
-            @Override
-            public void run(){
-                try{
-                    otherPeers.get(0).getConnection().receive();
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+        Config.initializeConfig();
+        ConnectionListenerThread lt = new ConnectionListenerThread();
+        lt.start();
         
-        otherPeers.get(0).getConnection().send("Blub");
+        
         
 //        Thread t = new Thread (new Runnable() {
 //            @Override

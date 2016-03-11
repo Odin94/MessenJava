@@ -24,7 +24,7 @@ public class Peer {
     
     public Peer(String name, String ipAddress, int port, String pubKey, String privKey) {
         this.name = name;
-        this.connection = new Connection(Util.StringToInetAddress(ipAddress), port);
+        this.connection = new Connection(Util.StringToInetAddress(ipAddress), port, this);
         //this.pubKey = getPubKeyFromString(pubKey);
         //this.privKey = getPrivKeyFromString(privKey);
     }
@@ -39,8 +39,11 @@ public class Peer {
         //connection.send(message);
     }
     
-    public void receive() {
-        //append recvd message to messages
+    public void receive(String message) {
+        //writeMessageToTxt
+        //frontend.newMessage(this,message)
+        System.out.println(message);
+        
     }
     
    
@@ -52,7 +55,17 @@ public class Peer {
         System.out.println("Peer.establishSharedSecret not yet implemented!!");
         return "h¾R¦î1‹˜»êÁ²‘îéÉyò…þ%v"; //actual AES key I think
     }
+ 
+    public void setConnectionAndConnect(Connection connection){
+        this.connection = connection;
+        this.connection.connect(); //also starts a listener
+    }
     
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+    
+        
     public String getName(){
         return name;
     }

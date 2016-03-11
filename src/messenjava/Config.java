@@ -9,6 +9,8 @@ import com.offbynull.portmapper.mapper.MappedPort;
 import com.offbynull.portmapper.mapper.PortMapper;
 import com.offbynull.portmapper.mapper.PortType;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
@@ -26,15 +28,18 @@ public class Config {
      * Maybe a port mapper and STUN will solve the problem...
      */
     private static InetAddress myIP; 
+    private static ServerSocket mySocket;
     private static RSAPrivateKey privKey;
 
-    public void initializeConfig(){
+    public static void initializeConfig() throws Exception{
         //TODO!
         //Read config, use port mapping
         myID = 1;
         myName = "Maxi";
         myIP = Util.StringToInetAddress("192.168.179.20");
         myPort = 1337;
+        mySocket = new ServerSocket(1337);
+        mySocket.accept();
         privKey = null;
         
     }

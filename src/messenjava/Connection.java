@@ -17,28 +17,50 @@ public class Connection {
     private InetAddress destIPAddress;
     private int destPort;
     private Socket socket;
-    private boolean doRead;
+    private Peer peer;
+    private MessageListenerThread mlt = null;
 
-    public Connection(InetAddress destIPAddress, int destPort) {
+    public Connection(InetAddress destIPAddress, int destPort, Peer peer) {
         this.destIPAddress = destIPAddress;
         this.destPort = destPort;
+        this.peer = peer;
     }
     
+    public Connection(Socket socket, Peer peer){
+        this.socket = socket;
+        this.destPort = socket.getPort();
+        this.destIPAddress = socket.getInetAddress();
+        this.peer = peer;
+    }
     
-    
+    /**
+     * Connects and starts a thread which listens on this connection. 
+     * If something is received, the thread will then call Peer.receive(), 
+     * which will print to txt and notify frontend.
+     * @return true if connection established successfully
+     */
     public boolean connect() {
-        try{
-            socket = new Socket(destIPAddress,destPort,Config.getMyIP(),Config.getMyPort());
-            return true; // return true if connection established successfully
+        if (!isConnected()){
+            try{
+                socket = new Socket(destIPAddress,destPort,Config.getMyIP(),Config.getMyPort());
+                mlt = new MessageListenerThread(peer);
+                mlt.start();
+                return true; // return true if connection established successfully
+            }
+            catch (IOException e){
+                e.printStackTrace();
+                return false;
+            }
         }
-        catch (IOException e){
-            e.printStackTrace();
-            return false;
+        else{
+            System.err.println("Connect was called, although the connection is already established. "
+                    + "\nNothing was done.");
+            return true; //true, because there is a valid connection
         }
     }
     
     public void send(String message) throws IOException{
-        if (socket != null){
+        if (isConnected()){
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.print(message);
         }
@@ -48,26 +70,27 @@ public class Connection {
         }
     }
     
-    public void receive() throws IOException{
-        if (socket != null){
+    public String receiveOneLine() throws IOException{
+        if (isConnected()){
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            doRead = true;
-            while (doRead){
-                System.out.println(in.readLine());
-            }
+            String res = in.readLine();
+            System.out.println(res);
+            return res;
         }
         else {
             this.connect();
-            this.receive();
+            return this.receiveOneLine();
         }
     }
 
-    public boolean doesRead() {
-        return doRead;
+    public boolean isConnected(){
+        return socket != null;
     }
     
-    public void setRead(boolean flag){
-        doRead = flag;
+    public void stopListening(){
+        if (mlt != null){
+            mlt.setListen(false);
+        }
     }
     
 }
