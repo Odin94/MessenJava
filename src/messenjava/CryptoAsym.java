@@ -17,9 +17,12 @@ import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -56,6 +59,35 @@ public class CryptoAsym {
 
     static PrivateKey privKey;
 
+    // SHA 512 = SHA-2 (I think so anyways, but how important can it be, rite??)
+    public static byte[] secureHash(String data) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        md.update(data.getBytes());
+        byte[] digest = md.digest();
+
+        return digest;
+    }
+
+    public static String toHexString(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+
+        for (int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xFF & bytes[i]);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+
+        return hexString.toString();
+    }
+
     public static byte[] encrypt(String data, PublicKey pubKey) throws EncryptionFailedException {
         byte[] dataToEncrypt = data.getBytes();
         byte[] encryptedData = null;
@@ -69,7 +101,7 @@ public class CryptoAsym {
         }
 
         if (encryptedData == null) {
-            throw new EncryptionFailedException("Could not encrypt String: " + data);
+            throw new EncryptionFailedException("Could not RSA encrypt String: " + data);
         }
 
         return encryptedData;
@@ -87,20 +119,39 @@ public class CryptoAsym {
         }
 
         if (decryptedData == null) {
-            throw new DecryptionFailedException("Could not decrypt byte array: " + data);
+            throw new DecryptionFailedException("Could not RSA decrypt byte array: " + data);
         }
 
         return new String(decryptedData);
     }
 
-    public static String sign(String text, PrivateKey privKey) {
-        System.out.println("CryptoAsym.sign not yet implemented!!");
-        return text;
+    public static byte[] sign(String data, PrivateKey privKey) {
+        byte[] signedBytes = null;
+        try {
+            Signature sig = Signature.getInstance("SHA256withRSA");
+            sig.initSign(privKey);
+            sig.update(data.getBytes());
+            signedBytes = sig.sign();
+        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+            e.printStackTrace(System.out);
+        }
+
+        return signedBytes;
     }
 
-    public static String checkSignature(String text, PublicKey pubKey) {
-        System.out.println("CryptoAsym.checkSignature not yet implemented!!");
-        return text;
+    public static boolean verifySignature(String checkValue, byte[] signature, PublicKey pubKey) {
+        boolean sigIsValid = false;
+
+        try {
+            Signature sig = Signature.getInstance("SHA256withRSA");
+            sig.initVerify(pubKey);
+            sig.update(checkValue.getBytes());
+            sigIsValid = sig.verify(signature);
+        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException e) {
+            e.printStackTrace(System.out);
+        }
+
+        return sigIsValid;
     }
 
     public static PublicKey readPublicKeyFromFile(String filename) throws IOException {
@@ -208,33 +259,69 @@ public class CryptoAsym {
         String PUBLIC_KEY_FILE = "pub.key";
         String PRIVATE_KEY_FILE = "priv.key";
 
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+        String PUBLIC_KEY_FILE2 = "pub2.key";
+        String PRIVATE_KEY_FILE2 = "priv2.key";
 
-        keyGen.initialize(2048);
-        KeyPair keyPair = keyGen.generateKeyPair();
-        PublicKey pubKey = keyPair.getPublic();
-        PrivateKey privKey = keyPair.getPrivate();
+        //Generate keys
+        /*KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec rsaPubKeySpec = keyFactory.getKeySpec(pubKey, RSAPublicKeySpec.class
-        );
-        RSAPrivateKeySpec rsaPrivKeySpec = keyFactory.getKeySpec(privKey, RSAPrivateKeySpec.class);
+         keyGen.initialize(2048);
+         KeyPair keyPair = keyGen.generateKeyPair();
+         PublicKey pubKey = keyPair.getPublic();
+         PrivateKey privKey = keyPair.getPrivate();
 
-        saveKeys(PUBLIC_KEY_FILE, rsaPubKeySpec.getModulus(), rsaPubKeySpec.getPublicExponent());
-        saveKeys(PRIVATE_KEY_FILE, rsaPrivKeySpec.getModulus(), rsaPrivKeySpec.getPrivateExponent());
+         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+         RSAPublicKeySpec rsaPubKeySpec = keyFactory.getKeySpec(pubKey, RSAPublicKeySpec.class
+         );
+         RSAPrivateKeySpec rsaPrivKeySpec = keyFactory.getKeySpec(privKey, RSAPrivateKeySpec.class);
 
-        PublicKey pubKeyRead = readPublicKeyFromFile(PUBLIC_KEY_FILE);
+         saveKeys(PUBLIC_KEY_FILE, rsaPubKeySpec.getModulus(), rsaPubKeySpec.getPublicExponent());
+         saveKeys(PRIVATE_KEY_FILE, rsaPrivKeySpec.getModulus(), rsaPrivKeySpec.getPrivateExponent());*/
+        generateKeysAndSaveToFiles(PUBLIC_KEY_FILE, PRIVATE_KEY_FILE);
+        generateKeysAndSaveToFiles(PUBLIC_KEY_FILE2, PRIVATE_KEY_FILE2);
 
-        byte[] encryptedData = encrypt("Data to enc", pubKeyRead);
+        PublicKey pubKey2 = readPublicKeyFromFile(PUBLIC_KEY_FILE2);
+        PrivateKey privKey2 = readPrivateKeyFromFile(PRIVATE_KEY_FILE2);
 
-        PrivateKey privKeyRead = readPrivateKeyFromFile(PRIVATE_KEY_FILE);
-        String decryptedData = decrypt(encryptedData, privKeyRead);
+        //Encrypt and Decrypt (after loading keys from files)
+        PublicKey pubKey = readPublicKeyFromFile(PUBLIC_KEY_FILE);
+        byte[] encryptedData = encrypt("Data to enc", pubKey);
 
-        if (decryptedData.equals("Data to enc")) {
+        PrivateKey privKey = readPrivateKeyFromFile(PRIVATE_KEY_FILE);
+        String decryptedData = decrypt(encryptedData, privKey);
+
+        // Hash test
+        String hashme = "hashmefriendo";
+        byte[] hashedHashme = secureHash(hashme);
+
+        String hashed = "7912f366fde83598f32d781c5e5769fcff40123cc6568dd5ad204773e379ec272f9e"
+                + "430016cf8aab8b198d51efc142e87c4db27ecdc050bacbe304dec2929317";
+
+        //Sign and verify
+        String signMe = "Signme, senhor!";
+        byte[] signedValue = sign(signMe, privKey);
+
+        boolean signatureValid1 = verifySignature(signMe, signedValue, pubKey);
+        boolean sinatureValid2 = !verifySignature(signMe, signedValue, pubKey2);
+        boolean cryptingWorks = decryptedData.equals("Data to enc");
+        boolean hashWorks = hashed.equals(toHexString(hashedHashme));
+
+        if (cryptingWorks && hashWorks && signatureValid1 && sinatureValid2) {
             System.out.println("CryptoAsym seems to work fine!");
         } else {
-            System.out.println("CryptoAsym messed up somewhere along the way: " + decryptedData + " != 'Data to enc'");
+            if (!cryptingWorks) {
+                System.out.println("Enc/Dec didn't work: " + decryptedData + " != 'Data to enc'."
+                        + " Might also be an error with loading from file");
+            } else if (!hashWorks) {
+                System.out.println("Hash didn't work: " + hashedHashme);
+            } else if (!signatureValid1) {
+                System.out.println("Signature/Verification didn't work.");
+            } else if (sinatureValid2) {
+                System.out.println("Signature/Verification returns true even for a false pubKey. Real bad.");
+            } else {
+                System.out.println("CryptoAsym messed up somewhere along the way");
+
+            }
         }
     }
-
 }

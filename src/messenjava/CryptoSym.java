@@ -5,12 +5,18 @@
  */
 package messenjava;
 
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.util.Base64;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -24,57 +30,82 @@ public class CryptoSym {
         //create AESKey from secret
     }
 
-    public static String encrypt(String text, SecretKey sharedSecret) {
-        byte[] byteText = null;
+    public static byte[] encrypt(String data, SecretKey sharedSecret) throws EncryptionFailedException {
+        byte[] dataToEncrypt = data.getBytes();
+        byte[] encryptedData = null;
 
         try {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
-            byteText = cipher.doFinal(text.getBytes());
-        } catch (Exception e) {
+            encryptedData = cipher.doFinal(dataToEncrypt);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException e) {
+            e.printStackTrace(System.out);
         }
 
-        String encText = Base64.getEncoder().encodeToString(byteText);
+        if (encryptedData == null) {
+            throw new EncryptionFailedException("Could not AES encrypt String: " + data);
+        }
 
-        return encText;
+        return encryptedData;
     }
 
-    public static String decrypt(String encText, SecretKey sharedSecret) {
-        byte[] crypted = Base64.getDecoder().decode(encText);
-        byte[] cipherData = null;
+    public static String decrypt(byte[] encData, SecretKey sharedSecret) throws DecryptionFailedException {
+        byte[] decryptedData = null;
 
         try {
             Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, sharedSecret);
-            cipherData = cipher.doFinal(crypted);
-        } catch (Exception e) {
+            decryptedData = cipher.doFinal(encData);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException | IllegalBlockSizeException e) {
+            e.printStackTrace();
         }
 
-        return new String(cipherData);
+        if (decryptedData == null) {
+            throw new DecryptionFailedException("Could not RSA decrypt byte array: " + encData);
+        }
+
+        return new String(decryptedData);
     }
 
-    public static void testMe() {
+    // can't make keys larger than 128 because of really stupid reasons: http://www.javamex.com/tutorials/cryptography/unrestricted_policy_files.shtml
+    // 128 bit keylength for AES is estimated to be secure until after 2030; should be fine for now
+    public static SecretKey generateKey(char[] password, int bitLength) {
+        SecureRandom secRandom = new SecureRandom();
+        byte[] salt = new byte[8];
+        secRandom.nextBytes(salt);
+
+        SecretKeyFactory factory = null;
         try {
-            byte[] salt = new byte[]{(byte) 0xe0};
-            char[] password = new char['p'];
-
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-            KeySpec spec = new PBEKeySpec(password, salt, 65536, 256);
-            SecretKey tmp = factory.generateSecret(spec);
-            SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secret);
-
-            byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-            byte[] ciphertext = cipher.doFinal("Hello, World!".getBytes("UTF-8"));
-
-// reinit cypher using param spec
-            cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-        } catch (Exception e) {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("es gayt net");
+        }
+
+        KeySpec spec = new PBEKeySpec(password, salt, 65536, bitLength);
+
+        SecretKey tmpKey = null;
+        try {
+            tmpKey = factory.generateSecret(spec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        SecretKey secret = new SecretKeySpec(tmpKey.getEncoded(), "AES");
+
+        return secret;
+    }
+
+    public static void testMe() throws Exception {
+        String messageToEnc = "Winners don't do drugs!";
+        SecretKey testKey = generateKey("MySecretKey".toCharArray(), 128);
+
+        byte[] encMessage = encrypt(messageToEnc, testKey);
+        String decMessage = decrypt(encMessage, testKey);
+
+        if (decMessage.equals(messageToEnc)) {
+            System.out.println("CryptoSym seems to be working!");
+        } else {
+            System.out.println("Seems like CryptoSym messed up somewhere along the way :(");
         }
     }
 }
