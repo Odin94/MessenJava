@@ -6,8 +6,11 @@
 package messenjava;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,17 +45,19 @@ public class MessenJava extends Application {
     //a field containing the name of the person the user is chating with at the moment, can be updated
     Label chatingWith=new Label();
     
+    ListView<Peer> list;
+    
     //
     // the List of Peers witch a showen in the people section
     public static ObservableList<Peer> otherPeers;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception{
     //GUI of The List of peers---------------------------------------------------------
         
-        ListView<Peer> list = new ListView<>();
+        list = new ListView<>();
         //initialise the list of peers; empty
-        otherPeers = FXCollections.observableList(new ArrayList());
+        //otherPeers = FXCollections.observableList(new ArrayList()); //commented out for testing reasons
         //connect the data with the listView
         list.setItems(otherPeers);
         
@@ -125,7 +130,7 @@ public class MessenJava extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        updateStatus(); //TODO: Do this again; just commented for testing purposes
+        updateStatus(); 
     }
 
     /**
@@ -142,9 +147,13 @@ public class MessenJava extends Application {
 
         //Display message
         display(message, true);
-
-        //Send message
-        //peer.send
+        
+        try {
+            list.getSelectionModel().getSelectedItem().sendWithoutEncryption(message);
+            
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void display(String message, boolean ownMessage) {
@@ -152,12 +161,15 @@ public class MessenJava extends Application {
     }
 
     private void updateStatus() {
-        otherPeers.clear();
         //dummi Liste
 //        otherPeers.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
 //        otherPeers.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
         //Actually something with dropbox
+        for (int i = 0; i<otherPeers.size(); i++){
+            otherPeers.get(i).setView(this);
+        }
     }
+        
 
     //Todo: attach to onClose event
     private void disconnect() {
@@ -174,47 +186,9 @@ public class MessenJava extends Application {
             e.printStackTrace();
         }
         
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Enter your name");
-        String str = in.readLine();
-        
-        otherPeers = FXCollections.observableList(new ArrayList());
-        
-        
-        if (str.equals("Jakob")){
-            Config.initializeConfig("Jakob","192.168.179.21",50004);
-            otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub"));
-            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub"));
-        }
-        else if (str.equals("Maxi")){
-            Config.initializeConfig("Maxi","192.168.179.20",50002);
-            otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub"));
-            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub"));
-        }
-        else if (str.equals("Andi")){
-            Config.initializeConfig("Andi","192.168.179.22",50001);
-            otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub"));
-            otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub"));
-        }
-        else{
-            System.out.println("Invalid name");
-            System.exit(-1);
-        }
-        
-        //launch(args);
-        ConnectionListenerThread clt = new ConnectionListenerThread();
-        clt.start();
-        
-        System.out.println("You may now enter messages:");
-        
-        while(true){
-            str = in.readLine();
-            otherPeers.get(0).getConnection().send(str + "\n");
-            System.out.println("Message sent, you may now enter the next message.");
-        }
-        
-        
-        
+        doTestStuff();
+        launch(args);
+             
 //        Thread t = new Thread (new Runnable() {
 //            @Override
 //            public void run(){
@@ -236,6 +210,45 @@ public class MessenJava extends Application {
         //con.receive();
         //con.send("blub");
         
+    }
+    
+    public static void doTestStuff() throws Exception{
+        otherPeers = FXCollections.observableList(new ArrayList());
+        
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter your name");
+        String str = in.readLine();
+        
+        if (str.equals("Jakob")){
+            Config.initializeConfig("Jakob","192.168.179.21",50004);
+            otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub",null));
+            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub",null));
+        }
+        else if (str.equals("Maxi")){
+            Config.initializeConfig("Maxi","192.168.179.20",50002);
+            otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub",null));
+            otherPeers.add(new Peer("Andi","192.168.179.22",50001,"priv","pub",null));
+        }
+        else if (str.equals("Andi")){
+            Config.initializeConfig("Andi","192.168.179.22",50001);
+            otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub",null));
+            otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub",null));
+        }
+        else{
+            System.out.println("Invalid name");
+            System.exit(-1);
+        }
+        
+        ConnectionListenerThread clt = new ConnectionListenerThread();
+        clt.start();
+        
+//        System.out.println("You may now enter messages:");
+//        
+//        while(true){
+//            str = in.readLine();
+//            otherPeers.get(1).getConnection().send(str + "\n");
+//            System.out.println("Message sent, you may now enter the next message.");
+//        }
     }
 
     class ListElement extends ListCell<Peer>{

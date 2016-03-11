@@ -5,7 +5,7 @@
  */
 package messenjava;
 
-import java.security.interfaces.RSAPrivateKey;
+import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 
@@ -22,10 +22,12 @@ public class Peer {
     private RSAPublicKey pubKey;
     private CryptoSym cryptoSym;
     private ArrayList<Message> oldMessages;
+    private MessenJava view;
     
-    public Peer(String name, String ipAddress, int port, String pubKey, String privKey) {
+    public Peer(String name, String ipAddress, int port, String pubKey, String privKey, MessenJava view) {
         this.name = name;
         this.connection = new Connection(Util.StringToInetAddress(ipAddress), port, this);
+        this.view = view;
         //this.pubKey = getPubKeyFromString(pubKey);
         //this.privKey = getPrivKeyFromString(privKey);
     }
@@ -40,11 +42,16 @@ public class Peer {
         //connection.send(message);
     }
     
+    public void sendWithoutEncryption(String message) throws IOException{
+        this.connection.send(message);
+    }
+    
     public void receive(String message) {
         //writeMessageToTxt
         //frontend.newMessage(this,message)
         if (message != null){
             System.out.println(message);
+            view.display(message, false);
         }
     }
     
@@ -66,6 +73,12 @@ public class Peer {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
+
+    public void setView(MessenJava view) {
+        this.view = view;
+    }
+    
+    
     
         
     public String getName(){
