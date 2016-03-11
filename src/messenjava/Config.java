@@ -33,7 +33,7 @@ public class Config {
         //Read config, use port mapping
         myID = 1;
         myName = "Maxi";
-        myIP = Util.StringToInetAddress("178.2.48.214");
+        myIP = Util.StringToInetAddress("192.168.179.20");
         myPort = 1337;
         privKey = null;
         

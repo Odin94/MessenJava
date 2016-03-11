@@ -56,4 +56,26 @@ public class Peer {
     public String getName(){
         return name;
     }
+
+    public int getID() {
+        return ID;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public RSAPublicKey getPubKey() {
+        return pubKey;
+    }
+
+    public CryptoSym getCryptoSym() {
+        return cryptoSym;
+    }
+
+    public ArrayList<Message> getOldMessages() {
+        return oldMessages;
+    }
+    
+    
 }

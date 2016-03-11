@@ -42,7 +42,7 @@ public class MessenJava extends Application {
     
     //
     // the List of Peers witch a showen in the people section
-    ObservableList<Peer> data;
+    public static ObservableList<Peer> otherPeers;
 
     @Override
     public void start(Stage primaryStage) {
@@ -50,9 +50,9 @@ public class MessenJava extends Application {
         
         ListView<Peer> list = new ListView<>();
         //initialise the list of peers; empty
-        data = FXCollections.observableList(new ArrayList());
+        otherPeers = FXCollections.observableList(new ArrayList());
         //connect the data with the listView
-        list.setItems(data);
+        list.setItems(otherPeers);
         
         //set the Designe of one element in the list View; every element will get one dataElement (Peer) to fill itself with information
         list.setCellFactory(new Callback<ListView<Peer>,ListCell<Peer>>(){
@@ -150,14 +150,16 @@ public class MessenJava extends Application {
     }
 
     private void updateStatus() {
-        data.clear();
+        otherPeers.clear();
         //dummi Liste
-        data.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
-        data.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
+//        otherPeers.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
+//        otherPeers.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
+        //Actually something with dropbox
+        otherPeers.add(new Peer("Jakob","192.168.179.21",1337,"pubKey","privKey"));
     }
 
     //Todo: attach to onClose event
-    private void disconect() {
+    private void disconnect() {
         System.out.println("disconect");
     }
 
@@ -170,29 +172,45 @@ public class MessenJava extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Thread t = new Thread (new Runnable() {
+        
+        launch(args);
+        
+        otherPeers.get(0).getConnection().connect();
+        new Thread(new Runnable(){
             @Override
             public void run(){
                 try{
-                    Config.forwardPort(1337);
+                    otherPeers.get(0).getConnection().receive();
                 }
                 catch (Exception e){
-                    System.out.println("Thread has some exception.");
                     e.printStackTrace();
                 }
-                        }
-        });
-        System.out.println("Thread created");
-        t.start();
-        System.out.println("Thread started");
+            }
+        }).start();
+        
+        otherPeers.get(0).getConnection().send("Blub");
+        
+//        Thread t = new Thread (new Runnable() {
+//            @Override
+//            public void run(){
+//                try{
+//                    Config.forwardPort(1337);
+//                }
+//                catch (Exception e){
+//                    System.out.println("Thread has some exception.");
+//                    e.printStackTrace();
+//                }
+//                        }
+//        });
+//        System.out.println("Thread created");
+//        t.start();
+//        System.out.println("Thread started");
 //        Connection con = new Connection(Util.StringToInetAddress("178.2.48.214"),1338);
 //        con.connect();
 //        System.out.println("Con established");
         //con.receive();
         //con.send("blub");
         
-        launch(args);
     }
 
     class ListElement extends ListCell<Peer>{
