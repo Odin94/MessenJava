@@ -48,5 +48,8 @@ public class Peer {
         System.out.println("Peer.establishSharedSecret not yet implemented!!");
         return "h¾R¦î1‹˜»êÁ²‘îéÉyò…þ%v"; //actual AES key I think
     }
-
+    
+    public String getName(){
+        return name;
+    }
 }
