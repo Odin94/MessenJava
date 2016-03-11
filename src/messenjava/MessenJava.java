@@ -5,6 +5,8 @@
  */
 package messenjava;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -123,7 +125,7 @@ public class MessenJava extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        updateStatus();
+        updateStatus(); //TODO: Do this again; just commented for testing purposes
     }
 
     /**
@@ -155,7 +157,6 @@ public class MessenJava extends Application {
 //        otherPeers.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
 //        otherPeers.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
         //Actually something with dropbox
-        otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"pubKey","privKey"));
     }
 
     //Todo: attach to onClose event
@@ -168,23 +169,43 @@ public class MessenJava extends Application {
      */
     public static void main(String[] args) throws Exception {
         try {
-            CryptoAsym.testMe();
+            //CryptoAsym.testMe();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Updated??");
-        launch(args);
-        System.out.println("0");
-        Config.initializeConfig();
-        System.out.println("1");
-        //ConnectionListenerThread clt = new ConnectionListenerThread();
-        System.out.println("2");
-        //clt.start();
-        System.out.println("3");
         
-        System.out.println("Kurz vor senden");
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter your name");
+        String str = in.readLine();
         
-        otherPeers.get(0).getConnection().send("Es geht!!!11");
+        otherPeers = FXCollections.observableList(new ArrayList());
+        
+        
+        if (str.equals("Jakob")){
+            Config.initializeConfig("Jakob","192.168.179.21",50004);
+            otherPeers.add(new Peer("Maxi","192.168.179.20",50002,"priv","pub"));
+        }
+        else if (str.equals("Maxi")){
+            Config.initializeConfig("Maxi","192.168.179.20",50002);
+            otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"priv","pub"));
+        }
+        else{
+            System.out.println("Invalid name");
+            System.exit(-1);
+        }
+        
+        //launch(args);
+        ConnectionListenerThread clt = new ConnectionListenerThread();
+        clt.start();
+        
+        System.out.println("You may now enter messages:");
+        
+        while(true){
+            str = in.readLine();
+            otherPeers.get(0).getConnection().send(str);
+            System.out.println("Message sent, you may now enter the next message.");
+        }
+        
         
         
 //        Thread t = new Thread (new Runnable() {

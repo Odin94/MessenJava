@@ -43,8 +43,9 @@ public class Peer {
     public void receive(String message) {
         //writeMessageToTxt
         //frontend.newMessage(this,message)
-        System.out.println(message);
-        
+        if (message != null){
+            System.out.println(message);
+        }
     }
     
    

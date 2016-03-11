@@ -41,6 +41,20 @@ public class Config {
         
     }
     
+    /**
+     * Just for testing
+     */
+    public static void initializeConfig(String name, String IP, int port) throws Exception{
+        //TODO!
+        //Read config, use port mapping
+        myID = 1;
+        myName = name;
+        myIP = Util.StringToInetAddress(IP);
+        myPort = port;
+        privKey = null;
+        
+    }
+    
     public static void forwardPort(int port) throws InterruptedException{
         // Start gateways
         Gateway network = NetworkGateway.create();

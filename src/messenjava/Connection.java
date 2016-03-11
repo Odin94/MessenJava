@@ -68,6 +68,7 @@ public class Connection {
         if (isConnected()){
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.print(message);
+            out.flush();
             System.out.println("Has sent");
         }
         else {
@@ -82,7 +83,6 @@ public class Connection {
         if (isConnected()){
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String res = in.readLine();
-            System.out.println(res);
             return res;
         }
         else {
