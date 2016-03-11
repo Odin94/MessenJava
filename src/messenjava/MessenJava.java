@@ -142,7 +142,7 @@ public class MessenJava extends Application {
 
         String message;
         //Get message from inputFiel
-        message = "hallo von Os";
+        message = "hallo von Os\n";
         /*Log*/System.out.println(message);
 
         //Display message
