@@ -81,6 +81,7 @@ public class MessenJava extends Application {
         HBox BackgroundSeperation = new HBox();
 
         VBox PeopleSection = new VBox();
+        PeopleSection.setMaxWidth(110);
         PeopleSection.setStyle("-fx-background-color: #336699;");
         PeopleSection.setPadding(new Insets(10, 10, 10, 10));
 
