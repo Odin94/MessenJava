@@ -30,28 +30,42 @@ import javafx.util.Callback;
  * @author Odin
  */
 public class MessenJava extends Application {
-
+    
+    //gui
     int windowWidth = 600;
     int windowheight = 400;
+    
+    // a field containing the latest message
     Label ChatMessages = new Label("start Text");
+    //a field containing the name of the person the user is chating with at the moment, can be updated
     Label chatingWith=new Label();
+    
+    //
+    // the List of Peers witch a showen in the people section
     ObservableList<Peer> data;
 
     @Override
     public void start(Stage primaryStage) {
+    //GUI of The List of peers---------------------------------------------------------
+        
         ListView<Peer> list = new ListView<>();
+        //initialise the list of peers; empty
         data = FXCollections.observableList(new ArrayList());
+        //connect the data with the listView
         list.setItems(data);
         
-        
+        //set the Designe of one element in the list View; every element will get one dataElement (Peer) to fill itself with information
         list.setCellFactory(new Callback<ListView<Peer>,ListCell<Peer>>(){
             
             @Override
             public ListCell<Peer> call(ListView<Peer> param) {
+                // the peer dont has to be passed to the element of the list; the methode updateItem() of class ListElement is automatically called and defines the element; To change the stile change the implementation of this methode
                 return new ListElement();
             }
         });
         
+        
+        // add a listener to the listView which handles the event of clicking on one element; This is used to switch between different people to chat with
         list.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             @Override
@@ -61,7 +75,9 @@ public class MessenJava extends Application {
                 chatingWith.setText("Chating with "+name);
             }
         });
+    //end listview------------------------------------------------------------------------------
         
+        //seperates the background into a section for people and a sectionfor chating
         HBox BackgroundSeperation = new HBox();
 
         VBox PeopleSection = new VBox();
@@ -166,13 +182,15 @@ public class MessenJava extends Application {
                 setGraphic(null);
             } else {
                 setText(null);
-
+                
+                //creation of the surface of one Listelement using the according Peer object
                 HBox seperation=new HBox();
                 Label name=new Label(peer.getName());
                 Label onOff=new Label("off");
                 onOff.setStyle("-fx-background-color: #ff1111;");
                 seperation.getChildren().addAll(name,onOff);
-
+                //----------------------------------------------------------------------
+                
                 setGraphic(seperation);
             }
         }
