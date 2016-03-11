@@ -28,7 +28,6 @@ public class Config {
      * Maybe a port mapper and STUN will solve the problem...
      */
     private static InetAddress myIP; 
-    private static ServerSocket mySocket;
     private static RSAPrivateKey privKey;
 
     public static void initializeConfig() throws Exception{
@@ -38,8 +37,6 @@ public class Config {
         myName = "Maxi";
         myIP = Util.StringToInetAddress("192.168.179.20");
         myPort = 1337;
-        mySocket = new ServerSocket(1337);
-        mySocket.accept();
         privKey = null;
         
     }

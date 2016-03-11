@@ -11,7 +11,8 @@ import java.util.ArrayList;
 
 /**
  *
- * @author Odin
+ * @author Odin: dummy, 
+ * @author Maxi: receive
  */
 public class Peer {
 

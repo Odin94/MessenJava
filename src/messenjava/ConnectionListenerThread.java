@@ -21,6 +21,7 @@ public class ConnectionListenerThread extends Thread{
     public void run(){
         while(true){
             try{
+                System.out.println("A thread is now listening for connections");
                 Socket socketToOtherGuy = ssocket.accept();
                 InetAddress remoteIP = socketToOtherGuy.getInetAddress();
                 int remotePort = socketToOtherGuy.getPort();

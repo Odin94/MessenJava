@@ -172,13 +172,19 @@ public class MessenJava extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+        System.out.println("Updated??");
         launch(args);
-        
+        System.out.println("0");
         Config.initializeConfig();
+        System.out.println("1");
         ConnectionListenerThread lt = new ConnectionListenerThread();
+        System.out.println("2");
         lt.start();
+        System.out.println("3");
         
+//        System.out.println("Kurz vor senden");
+//        
+//        otherPeers.get(0).getConnection().send("Es geht!!!11");
         
         
 //        Thread t = new Thread (new Runnable() {

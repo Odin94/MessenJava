@@ -10,7 +10,7 @@ import java.net.Socket;
 /**
  *
  * @author Odin: Dummy
- * @author Maxi: connect()
+ * @author Maxi: connect(), and a lot of other stuff
  */
 public class Connection {
     
@@ -41,8 +41,10 @@ public class Connection {
      */
     public boolean connect() {
         if (!isConnected()){
+            System.out.println("Connecting");
             try{
                 socket = new Socket(destIPAddress,destPort,Config.getMyIP(),Config.getMyPort());
+                System.out.println("Connected");
                 mlt = new MessageListenerThread(peer);
                 mlt.start();
                 return true; // return true if connection established successfully
@@ -60,11 +62,14 @@ public class Connection {
     }
     
     public void send(String message) throws IOException{
+        System.out.println("Sending");
         if (isConnected()){
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.print(message);
+            System.out.println("Has sent");
         }
         else {
+            System.out.println("Need to connect first");
             this.connect();
             this.send(message);
         }
