@@ -8,9 +8,13 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="MessenJava.jar" size="22969" download="eager" />
+    <jar href="MessenJava.jar" size="23818" download="eager" />
+    <jar href="lib\commons-collections4-4.1.jar" size="751238" download="eager" />
+    <jar href="lib\commons-io-2.4.jar" size="185140" download="eager" />
+    <jar href="lib\commons-lang3-3.4.jar" size="434678" download="eager" />
     <jar href="lib\org-apache-commons-codec.jar" size="46739" download="eager" />
     <jar href="lib\portmapper-2.0.0.jar" size="238749" download="eager" />
+    <jar href="lib\slf4j-api-1.7.18.jar" size="40518" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="MessenJava" >
     <param name="requiredFXVersion" value="8.0+"/>

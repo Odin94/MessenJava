@@ -171,11 +171,24 @@ public class MessenJava extends Application {
             e.printStackTrace();
         }
 
-        Config.forwardPort(1337);
+        Thread t = new Thread (new Runnable() {
+            @Override
+            public void run(){
+                try{
+                    Config.forwardPort(1337);
+                }
+                catch (Exception e){
+                    System.out.println("Thread has some exception.");
+                }
+                        }
+        });
+        System.out.println("Thread created");
+        t.start();
+        System.out.println("Thread started");
         System.out.println("port mapped");
-        Connection con = new Connection(Util.StringToInetAddress("178.2.48.214"),1338);
-        con.connect();
-        System.out.println("Con established");
+//        Connection con = new Connection(Util.StringToInetAddress("178.2.48.214"),1338);
+//        con.connect();
+//        System.out.println("Con established");
         //con.receive();
         //con.send("blub");
         

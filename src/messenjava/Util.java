@@ -10,9 +10,7 @@ import java.net.UnknownHostException;
 public class Util {
 
     public static InetAddress StringToInetAddress(String ip){
-        System.out.println(ip);
         String[] parts = ip.split("\\.");
-        System.out.println(parts);
         try{
                 byte[] IP = new byte[4];
                 IP[0] = (byte) Integer.parseInt(parts[0]);

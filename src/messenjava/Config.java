@@ -8,7 +8,6 @@ import com.offbynull.portmapper.gateways.process.ProcessGateway;
 import com.offbynull.portmapper.mapper.MappedPort;
 import com.offbynull.portmapper.mapper.PortMapper;
 import com.offbynull.portmapper.mapper.PortType;
-import static com.sun.deploy.cache.MemoryCache.shutdown;
 import java.net.InetAddress;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
