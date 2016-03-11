@@ -34,13 +34,13 @@ public class Config {
         //Read config, use port mapping
         myID = 1;
         myName = "Maxi";
-        myIP = Util.StringToInetAddress("192.168.1.33");
+        myIP = Util.StringToInetAddress("178.2.48.214");
         myPort = 1337;
         privKey = null;
         
     }
     
-    public static void forwardPort() throws InterruptedException{
+    public static void forwardPort(int port) throws InterruptedException{
         // Start gateways
         Gateway network = NetworkGateway.create();
         Gateway process = ProcessGateway.create();
@@ -56,7 +56,7 @@ public class Config {
         // IMPORTANT NOTE: Many devices prevent you from mapping ports that are <= 1024
         // (both internal and external ports). Be mindful of this when choosing which
         // ports you want to map.
-        MappedPort mappedPort = mapper.mapPort(PortType.TCP, 12345, 55555, 60);
+        MappedPort mappedPort = mapper.mapPort(PortType.TCP, port, port, 60);
         System.out.println("Port mapping added: " + mappedPort);
 
         // Refresh mapping half-way through the lifetime of the mapping (for example,

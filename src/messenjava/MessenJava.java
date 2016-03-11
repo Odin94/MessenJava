@@ -164,13 +164,21 @@ public class MessenJava extends Application {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
             CryptoAsym.testMe();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        Config.forwardPort(1337);
+        System.out.println("port mapped");
+        Connection con = new Connection(Util.StringToInetAddress("178.2.48.214"),1338);
+        con.connect();
+        System.out.println("Con established");
+        //con.receive();
+        //con.send("blub");
+        
         launch(args);
     }
 
