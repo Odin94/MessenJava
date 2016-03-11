@@ -39,7 +39,6 @@ public class MessenJava extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        
         ListView<Peer> list = new ListView<>();
         data = FXCollections.observableList(new ArrayList());
         list.setItems(data);
@@ -108,7 +107,6 @@ public class MessenJava extends Application {
         primaryStage.show();
 
         updateStatus();
-        
     }
 
     /**
@@ -135,11 +133,10 @@ public class MessenJava extends Application {
     }
 
     private void updateStatus() {
-        //data.clear();
+        data.clear();
         //dummi Liste
-        //Peer a=new Peer("anton","111",3,"pubKey","privKey");
-        //data.add(new Peer("anton","111",3,"pubKey","privKey"));
-        //data.add(new Peer("peter","111",3,"pubKey","privKey"));
+        data.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
+        data.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
     }
 
     //Todo: attach to onClose event
