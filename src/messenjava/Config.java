@@ -15,8 +15,7 @@ public class Config {
     private static int myPort;
     /**
      * To get my IP, I need to use something like STUN
-     * There are open STUN servers, and probably some implementations, but I did not find anything directly useful.
-     * Still, we want P2P, so keep on searching...
+     * Maybe a port mapper and STUN will solve the problem...
      */
     private static InetAddress myIP; 
     private static RSAPrivateKey privKey;
@@ -28,7 +27,7 @@ public class Config {
         myName = "Maxi";
         myIP = Util.StringToInetAddress("192.168.1.33");
         myPort = 1337;
-        
+        privKey = null;
         
     }
     
