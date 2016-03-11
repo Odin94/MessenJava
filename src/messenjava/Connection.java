@@ -31,6 +31,8 @@ public class Connection {
         this.destPort = socket.getPort();
         this.destIPAddress = socket.getInetAddress();
         this.peer = peer;
+        mlt = new MessageListenerThread(peer);
+        mlt.start();
     }
     
     /**
@@ -98,5 +100,15 @@ public class Connection {
             mlt.setListen(false);
         }
     }
+
+    public InetAddress getDestIPAddress() {
+        return destIPAddress;
+    }
+
+    public int getDestPort() {
+        return destPort;
+    }
+    
+    
     
 }

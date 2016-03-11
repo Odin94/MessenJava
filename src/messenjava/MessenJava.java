@@ -155,12 +155,12 @@ public class MessenJava extends Application {
 //        otherPeers.add(new Peer("anton","192.168.1.33",3,"pubKey","privKey"));
 //        otherPeers.add(new Peer("peter","192.168.1.34",3,"pubKey","privKey"));
         //Actually something with dropbox
-        otherPeers.add(new Peer("Jakob","192.168.179.20",50004,"pubKey","privKey"));
+        otherPeers.add(new Peer("Jakob","192.168.179.21",50004,"pubKey","privKey"));
     }
 
     //Todo: attach to onClose event
     private void disconnect() {
-        System.out.println("disconect");
+        System.out.println("disconnect");
     }
 
     /**
@@ -177,9 +177,9 @@ public class MessenJava extends Application {
         System.out.println("0");
         Config.initializeConfig();
         System.out.println("1");
-        ConnectionListenerThread clt = new ConnectionListenerThread();
+        //ConnectionListenerThread clt = new ConnectionListenerThread();
         System.out.println("2");
-        clt.start();
+        //clt.start();
         System.out.println("3");
         
         System.out.println("Kurz vor senden");

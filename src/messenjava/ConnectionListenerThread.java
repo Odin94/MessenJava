@@ -27,7 +27,7 @@ public class ConnectionListenerThread extends Thread{
                 InetAddress remoteIP = socketToOtherGuy.getInetAddress();
                 int remotePort = socketToOtherGuy.getPort();
                 Peer otherGuy = findPeerFromIPandPort(remoteIP, remotePort);
-                otherGuy.setConnectionAndConnect(new Connection(socketToOtherGuy, otherGuy));
+                otherGuy.setConnection(new Connection(socketToOtherGuy, otherGuy));
             }
             catch(Exception e) {
                 e.printStackTrace();
@@ -36,7 +36,12 @@ public class ConnectionListenerThread extends Thread{
     }
     
     public Peer findPeerFromIPandPort(InetAddress IP, int port){
-        //uses MessenJava.otherPeers
+        for (int i = 0; i<MessenJava.otherPeers.size(); i++){
+            if(MessenJava.otherPeers.get(i).getConnection().getDestIPAddress()==IP &&
+                    MessenJava.otherPeers.get(i).getConnection().getDestPort()==port){
+                return MessenJava.otherPeers.get(i);
+            }
+        }
         return null;
     }
 
