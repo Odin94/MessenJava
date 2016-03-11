@@ -202,7 +202,7 @@ public class MessenJava extends Application {
         
         while(true){
             str = in.readLine();
-            otherPeers.get(0).getConnection().send(str);
+            otherPeers.get(0).getConnection().send(str + "\n");
             System.out.println("Message sent, you may now enter the next message.");
         }
         

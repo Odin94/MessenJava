@@ -37,7 +37,7 @@ public class ConnectionListenerThread extends Thread{
     
     public Peer findPeerFromIPandPort(InetAddress IP, int port){
         for (int i = 0; i<MessenJava.otherPeers.size(); i++){
-            if(MessenJava.otherPeers.get(i).getConnection().getDestIPAddress()==IP &&
+            if(MessenJava.otherPeers.get(i).getConnection().getDestIPAddress().equals(IP) &&
                     MessenJava.otherPeers.get(i).getConnection().getDestPort()==port){
                 return MessenJava.otherPeers.get(i);
             }

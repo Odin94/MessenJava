@@ -30,16 +30,16 @@ public class Config {
     private static InetAddress myIP; 
     private static RSAPrivateKey privKey;
 
-    public static void initializeConfig() throws Exception{
-        //TODO!
-        //Read config, use port mapping
-        myID = 1;
-        myName = "Maxi";
-        myIP = Util.StringToInetAddress("192.168.179.20");
-        myPort = 50002;
-        privKey = null;
-        
-    }
+//    public static void initializeConfig() throws Exception{
+//        //TODO!
+//        //Read config, use port mapping
+//        myID = 1;
+//        myName = "Maxi";
+//        myIP = Util.StringToInetAddress("192.168.179.20");
+//        myPort = 50002;
+//        privKey = null;
+//        
+//    }
     
     /**
      * Just for testing
