@@ -179,13 +179,13 @@ public class MessenJava extends Application {
                 }
                 catch (Exception e){
                     System.out.println("Thread has some exception.");
+                    e.printStackTrace();
                 }
                         }
         });
         System.out.println("Thread created");
         t.start();
         System.out.println("Thread started");
-        System.out.println("port mapped");
 //        Connection con = new Connection(Util.StringToInetAddress("178.2.48.214"),1338);
 //        con.connect();
 //        System.out.println("Con established");
